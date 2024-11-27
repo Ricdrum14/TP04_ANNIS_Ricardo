@@ -1,0 +1,88 @@
+.card-actions {
+  width: 90%;
+  max-width: 700px;
+  background-color: #f8f9fa;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 20px; /* Ajout de padding pour espacer le contenu */
+  margin: 20px auto; /* Centre la section sur la page */
+}
+
+.card-actions-title {
+  font-family: 'Georgia', serif; /* Même police que le titre de paiement */
+  font-size: 1.5em; /* Taille correspondante au `payment-title` */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1em; /* Espacement en dessous du titre */
+  color: #333; /* Couleur sombre pour cohérence */
+}
+
+.card-form {
+  background-color: #ffffff; /* Arrière-plan blanc pour le formulaire */
+  padding: 20px;
+  border: 1px solid #ddd; /* Bordure légère */
+  border-radius: 12px;
+  margin-bottom: 20px; /* Espacement entre le formulaire et la liste */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Ajout d'une animation sur le survol */
+  margin-right: 10px; /* Espacement si d'autres boutons sont ajoutés */
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  transform: scale(1.05); /* Effet de survol */
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 10px;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10px; /* Espacement interne */
+  border: 1px solid #ddd; /* Bordure pour séparer les items */
+  margin-bottom: 10px; /* Espacement entre les items */
+  border-radius: 8px; /* Coins légèrement arrondis */
+  background-color: #fff; /* Arrière-plan blanc */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05); /* Effet d'ombre */
+}
+
+.list-group-item .btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.list-group-item .btn-danger:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}

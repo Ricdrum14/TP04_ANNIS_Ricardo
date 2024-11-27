@@ -1,0 +1,60 @@
+/* Style pour le titre en dehors du rectangle */
+.payment-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif; /* Changez la police selon vos préférences */
+    padding: 2em; /* Espace autour du formulaire */
+    margin-top: 2em; /* Ajoute de l'espace en haut du titre */
+  }
+  
+  .payment-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em; /* Positionne le titre plus près du rectangle */
+    background-color: white; /* Arrière-plan blanc pour masquer la bordure du rectangle */
+    padding: 0 10px;
+    font-family: 'Georgia', serif; /* Police pour le titre */
+  }
+  
+  .payment-container {
+    border: 1px solid #ddd;
+    padding: 1.5em;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 8px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px; /* Arrondir les coins du rectangle */
+  }
+  
+  .form-control {
+    border-radius: 25px; /* Arrondir les coins des champs */
+  }
+  
+  button[type="submit"] {
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 10px 0;
+    width: 90%;
+    max-width: 200px;
+    display: block;
+    background-color: #ffc107; /* Couleur de fond initiale */
+    color: #fff; /* Couleur du texte initiale */
+    transition: background-color 0.3s ease; /* Transition douce */
+  }
+
+  button[type="submit"]:hover {
+    background-color: #e0a800; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol (facultatif, si différent) */
+  }
+  
+  .card-options {
+    font-family: 'Verdana', sans-serif;
+  }
+
+  .card-icon {
+    width: 40px;
+    margin: 0 5px;
+  }
+  
+  

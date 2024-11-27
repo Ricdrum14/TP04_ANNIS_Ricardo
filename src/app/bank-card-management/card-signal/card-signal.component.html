@@ -1,0 +1,61 @@
+<div class="card-actions mt-4">
+  <h4 class="card-actions-title">Actions sur les Cartes</h4>
+
+  <!-- Bouton Ajouter une Carte -->
+  <button *ngIf="!showForm" class="btn btn-success mb-3" (click)="addCard()">Ajouter une Carte</button>
+
+  <!-- Formulaire pour ajouter une carte -->
+  <div *ngIf="showForm" class="card-form mt-3 p-3 border rounded">
+    <form [formGroup]="cardForm" (ngSubmit)="submitCard()">
+      <div class="form-group mb-3">
+        <label for="pan">Numéro de carte</label>
+        <input
+          id="pan"
+          formControlName="pan"
+          type="text"
+          class="form-control"
+          placeholder="1234 1234 1234 1234"
+        />
+        <div *ngIf="cardForm.get('pan')?.invalid && cardForm.get('pan')?.touched" class="text-danger">
+          Numéro de carte invalide (16 chiffres requis).
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="expiry">Date d'expiration</label>
+        <input
+          id="expiry"
+          formControlName="expiry"
+          type="text"
+          class="form-control"
+          placeholder="MM/AA"
+        />
+        <div *ngIf="cardForm.get('expiry')?.invalid && cardForm.get('expiry')?.touched" class="text-danger">
+          Format invalide (MM/AA).
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="cvv">Code de sécurité (CVV)</label>
+        <input
+          id="cvv"
+          formControlName="cvv"
+          type="text"
+          class="form-control"
+          placeholder="CVC"
+        />
+        <div *ngIf="cardForm.get('cvv')?.invalid && cardForm.get('cvv')?.touched" class="text-danger">
+          Code de sécurité invalide (3 chiffres requis).
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary me-2">Ajouter la Carte</button>
+      <button type="button" class="btn btn-secondary" (click)="showForm = false">Annuler</button>
+    </form>
+  </div>
+
+  <!-- Liste des cartes -->
+  <app-card-list [cards]="savedCards()" (onDeleteCard)="deleteCard($event)"></app-card-list>
+</div>
+
+  

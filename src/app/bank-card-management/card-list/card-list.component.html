@@ -1,0 +1,15 @@
+<div class="card-list mt-4">
+  <h4 class="mb-3">Liste des Cartes :</h4>
+  <ul class="list-group">
+    <li *ngFor="let card of cards" class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ card.name }}</strong> <br>
+        <span>{{ card.pan | caviarder }}</span> - <span>{{ card.expiry }}</span>
+      </div>
+      <button class="btn btn-danger btn-sm" (click)="deleteCard(card.pan)">Supprimer</button>
+    </li>
+  </ul>
+</div>
+
+
+  

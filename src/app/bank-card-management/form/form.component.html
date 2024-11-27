@@ -1,0 +1,57 @@
+<div class="payment-wrapper">
+  <h3 class="payment-title">Votre moyen de paiement</h3>
+  
+  <div class="payment-container p-4 rounded border">
+    <div class="card-options d-flex justify-content-between align-items-center mb-4">
+      <span class="font-weight-bold">Carte Bancaire</span>
+      <div class="card-icons">
+        <img src="../../../assets/images/Visa_Inc._logo.svg.png" alt="Visa" class="mx-1" width="40">
+        <img src="../../../assets/images/amex-card1708.jpg" alt="Amex" class="mx-1" width="40">
+        <img src="../../../assets/images/MasterCard_Logo.svg.webp" alt="MasterCard" class="mx-1" width="40">
+      </div>
+    </div>
+
+    <form [formGroup]="cardForm" (ngSubmit)="submit()">
+      <div class="form-group mb-3">
+        <label for="cardHolder">Titulaire de la carte</label>
+        <input type="text" id="cardHolder" formControlName="name" class="form-control" placeholder="Nom complet" appValidator="Nom requis, lettres seulement">
+        <div *ngIf="cardForm.get('name')?.invalid && cardForm.get('name')?.touched" class="text-danger">
+          Le nom du titulaire est requis et ne doit contenir que des lettres.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="cardNumber">Numéro de carte</label>
+        <input type="text" id="cardNumber" formControlName="pan" class="form-control" placeholder="1234 1234 1234 1234" appValidator="16 chiffres requis">
+        <div *ngIf="cardForm.get('pan')?.invalid && cardForm.get('pan')?.touched" class="text-danger">
+          Le numéro de carte doit contenir 16 chiffres.
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <div class="form-group mr-2" style="width: 48%;">
+          <label for="expiryDate">Date d'expiration</label>
+          <input type="text" id="expiryDate" formControlName="expiry" class="form-control" placeholder="MM / AA" appValidator="Date au format MM / AA">
+          <div *ngIf="cardForm.get('expiry')?.invalid && cardForm.get('expiry')?.touched" class="text-danger">
+            La date d'expiration est invalide.
+          </div>
+        </div>
+        <div class="form-group ml-2" style="width: 48%;">
+          <label for="cvc">Code de sécurité</label>
+          <input type="text" id="cvc" formControlName="cvv" class="form-control" placeholder="CVC" appValidator="3 chiffres requis">
+          <div *ngIf="cardForm.get('cvv')?.invalid && cardForm.get('cvv')?.touched" class="text-danger">
+            Le code de sécurité doit contenir 3 chiffres.
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-warning btn-lg btn-block mt-4 mx-auto d-block" [disabled]="cardForm.invalid">
+        Payer 00,00 €
+      </button>
+    </form>
+
+    <p class="text-center mt-3 small">
+      En continuant vous acceptez nos <a href="../../../assets/documents/cgu.html">CGU</a> et <a href="../../../assets/documents/privacy-policy.html">Politique de Confidentialité</a>.
+    </p>
+  </div>
+</div>

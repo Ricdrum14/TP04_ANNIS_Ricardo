@@ -1,0 +1,26 @@
+/* card-list.component.css */
+.card-list {
+    font-family: 'Arial', sans-serif; /* Harmonisation de la police */
+    text-align: center; /* Centre le texte */
+  }
+  
+  .card-list h4 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .list-group-item {
+    border-radius: 12px;
+    font-size: 1em;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .btn-danger {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9em;
+  }
+  
