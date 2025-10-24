@@ -1,0 +1,98 @@
+<div class="max-w-7xl mx-auto px-6 py-16">
+ 
+  <!-- Chargement -->
+  <div *ngIf="loading" class="text-center text-gray-500 italic">
+    Chargement des données en cours...
+  </div>
+
+  <!-- ✅ Détails d'une pollution -->
+  <app-pollution-details
+    *ngIf="selectedPollution"
+    [pollution]="selectedPollution"
+  ></app-pollution-details>
+
+  <!-- 🔙 Bouton retour -->
+  <div *ngIf="selectedPollution" class="text-center mt-6">
+    <button
+      (click)="closeDetails()"
+      class="bg-gray-200 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-300 transition"
+    >
+      ← Retour à la liste
+    </button>
+  </div>
+    <!-- 🔽 Sinon, la liste -->
+<ng-container *ngIf="!selectedPollution && !loading">
+  <ng-container *ngIf="(filteredPollutions$ | async) as pollutions; else noData">
+
+    <!-- ✅ Grille des pollutions (limitée à 4 par défaut) -->
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+      <div
+        *ngFor="let pollution of (showAll ? pollutions : pollutions.slice(0, maxVisible))"
+        class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
+      >
+        <!-- Image -->
+        <div class="relative">
+          <img
+            [src]="pollution.photo"
+            [alt]="pollution.titre"
+            class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div
+            class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          ></div>
+        </div>
+
+        <!-- Contenu -->
+        <div class="p-5">
+          <h3 class="text-lg font-bold text-indigo-700 mb-1 truncate">
+            {{ pollution.titre }}
+          </h3>
+          <p class="text-xs text-gray-500 mb-2 flex items-center gap-1">
+            📍 {{ pollution.lieu }} — {{ pollution.date | date:'dd MMM yyyy' }}
+          </p>
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+            {{ pollution.description }}
+          </p>
+          <p class="text-xs text-gray-400 mb-3 italic">
+            Lat: {{ pollution.latitude }} / Long: {{ pollution.longitude }}
+          </p>
+
+          <div class="flex justify-between items-center">
+            <button
+              (click)="viewDetails(pollution)"
+              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition"
+            >
+              Voir plus →
+            </button>
+            <button
+              (click)="deletePollution(pollution.id)"
+              class="text-sm font-medium text-red-500 hover:text-red-700 transition"
+            >
+              🗑️ Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Bouton "Voir plus / moins" -->
+    <div *ngIf="pollutions.length > maxVisible" class="text-center mt-10">
+      <button
+        (click)="toggleView()"
+        class="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
+      >
+        {{ showAll ? 'Voir moins ↑' : 'Voir plus ↓' }}
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- Aucune pollution -->
+  <ng-template #noData>
+    <div class="text-gray-400 text-center mt-12 text-lg">
+      Aucune pollution signalée pour le moment 🌍
+    </div>
+  </ng-template>
+</ng-container>
+
+ 
+</div>
