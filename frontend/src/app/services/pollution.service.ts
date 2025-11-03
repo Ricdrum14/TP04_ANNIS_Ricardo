@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Pollution } from '../models/pollution';
 import { environment } from '../../environments/environment';
 
@@ -10,10 +10,9 @@ import { environment } from '../../environments/environment';
 })
 export class PollutionService {
   private apiUrl = environment.backendPollution;
+  private isMock = !environment.production; // 👈 détermine si on est en local
 
   private localPollutions: Pollution[] = [];
-
-  // ✅ Stream réactif partagé entre les composants
   private pollutionsSubject = new BehaviorSubject<Pollution[]>([]);
   pollutions$ = this.pollutionsSubject.asObservable();
 
@@ -21,43 +20,69 @@ export class PollutionService {
 
   /** 🔹 Récupère toutes les pollutions */
   getPollutions(): Observable<Pollution[]> {
+    // 👇 Si c’est la première fois, on charge depuis la source
     if (this.localPollutions.length === 0) {
       return this.http.get<Pollution[]>(this.apiUrl).pipe(
-        map((data) => {
+        tap(data => {
           this.localPollutions = data;
-          this.pollutionsSubject.next(data); // 🔄 push dans le flux
-          return data;
+          this.pollutionsSubject.next(data);
         })
       );
-    } else {
-      return this.pollutions$; // 🔄 on renvoie le flux directement
     }
+    // 👇 Sinon, on renvoie le flux actuel
+    return this.pollutions$;
   }
 
   /** ➕ Ajoute une pollution */
   addPollution(pollution: Pollution): Observable<Pollution> {
-    this.localPollutions.push(pollution);
-    this.pollutionsSubject.next([...this.localPollutions]); // 🔄 notify tous les composants
-    console.log('✅ Pollution ajoutée (mock) :', pollution);
-    return of(pollution);
+    if (this.isMock) {
+      // ✅ mode local : on simule l’ajout
+      this.localPollutions.push(pollution);
+      this.pollutionsSubject.next([...this.localPollutions]);
+      console.log('✅ Pollution ajoutée (mock) :', pollution);
+      return of(pollution);
+    } else {
+      // ✅ mode production : appel API
+      return this.http.post<Pollution>(this.apiUrl, pollution).pipe(
+        tap((newPollution) => {
+          this.localPollutions.push(newPollution);
+          this.pollutionsSubject.next([...this.localPollutions]);
+        })
+      );
+    }
   }
 
   /** ✏️ Met à jour une pollution */
   updatePollution(updated: Pollution): Observable<Pollution> {
-    const index = this.localPollutions.findIndex((p) => p.id === updated.id);
-    if (index !== -1) {
-      this.localPollutions[index] = updated;
-      this.pollutionsSubject.next([...this.localPollutions]); // ✅ mise à jour temps réel
+    if (this.isMock) {
+      const index = this.localPollutions.findIndex(p => p.id === updated.id);
+      if (index !== -1) this.localPollutions[index] = updated;
+      this.pollutionsSubject.next([...this.localPollutions]);
+      return of(updated);
+    } else {
+      return this.http.put<Pollution>(`${this.apiUrl}/${updated.id}`, updated).pipe(
+        tap(updatedPollution => {
+          const index = this.localPollutions.findIndex(p => p.id === updatedPollution.id);
+          if (index !== -1) this.localPollutions[index] = updatedPollution;
+          this.pollutionsSubject.next([...this.localPollutions]);
+        })
+      );
     }
-    console.log('📝 Pollution mise à jour :', updated);
-    return of(updated);
   }
 
   /** ❌ Supprime une pollution */
   deletePollution(id: string): Observable<void> {
-    this.localPollutions = this.localPollutions.filter((p) => p.id !== id);
-    this.pollutionsSubject.next([...this.localPollutions]);
-    console.log('🗑️ Pollution supprimée :', id);
-    return of(void 0);
+    if (this.isMock) {
+      this.localPollutions = this.localPollutions.filter(p => p.id !== id);
+      this.pollutionsSubject.next([...this.localPollutions]);
+      return of(void 0);
+    } else {
+      return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+        tap(() => {
+          this.localPollutions = this.localPollutions.filter(p => p.id !== id);
+          this.pollutionsSubject.next([...this.localPollutions]);
+        })
+      );
+    }
   }
 }
