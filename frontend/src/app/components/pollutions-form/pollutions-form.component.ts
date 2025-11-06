@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { PollutionService } from '../../services/pollution.service';
 import { Pollution } from '../../models/pollution';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-pollutions-form',
@@ -13,12 +14,10 @@ import { Pollution } from '../../models/pollution';
 })
 export class PollutionsFormComponent implements OnInit {
 
-  /** ✅ Événement envoyé au parent avec le message de succès */
   @Output() pollutionAdded = new EventEmitter<string>();
 
   pollutionForm!: FormGroup;
   photoPreview: string | ArrayBuffer | null = null;
-
   successMessage = '';
   formSubmitted = false;
 
@@ -33,21 +32,11 @@ export class PollutionsFormComponent implements OnInit {
       lieu: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
       latitude: [
         '',
-        [
-          Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/),
-          Validators.required,
-          Validators.min(-90),
-          Validators.max(90)
-        ]
+        [Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/), Validators.required, Validators.min(-90), Validators.max(90)]
       ],
       longitude: [
         '',
-        [
-          Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/),
-          Validators.required,
-          Validators.min(-180),
-          Validators.max(180)
-        ]
+        [Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/), Validators.required, Validators.min(-180), Validators.max(180)]
       ],
       photo: ['']
     });
@@ -62,21 +51,23 @@ export class PollutionsFormComponent implements OnInit {
     if (this.pollutionForm.invalid) return;
 
     const formData = this.pollutionForm.value;
+
+    // ⚠️ Si on est en prod et que la photo est base64, on ne l’envoie pas
+    const isBase64 = typeof this.photoPreview === 'string' && this.photoPreview.startsWith('data:');
+    const safePhoto =
+      environment.production && isBase64 ? null : this.photoPreview || formData.photo;
+
     const newPollution: Pollution = {
       ...formData,
       id: crypto.randomUUID().substring(0, 8),
       date: new Date(formData.date),
-      photo: this.photoPreview || formData.photo
+      photo: safePhoto
     };
 
     this.pollutionService.addPollution(newPollution).subscribe({
       next: (pollution) => {
         console.log('✅ Pollution ajoutée :', pollution);
-
-        // ✅ On émet le message de succès vers le parent
         this.pollutionAdded.emit(`✅ Pollution "${pollution.titre}" déclarée avec succès !`);
-
-        // Réinitialisation
         this.pollutionForm.reset();
         this.photoPreview = null;
       },
@@ -84,7 +75,7 @@ export class PollutionsFormComponent implements OnInit {
     });
   }
 
-  /** 📁 Quand une photo locale est sélectionnée */
+  /** 📁 Sélection d’une photo locale */
   onPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;

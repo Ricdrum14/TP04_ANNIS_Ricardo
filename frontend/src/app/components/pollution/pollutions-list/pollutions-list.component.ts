@@ -48,7 +48,21 @@ export class PollutionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   viewDetails(pollution: Pollution) {
-    this.selectedPollution = pollution;
+    console.log('ID de la pollution:', pollution.id); // Debug
+    this.loading = true;
+    this.pollutionService.getPollutionById(pollution.id).subscribe({
+      next: (detailedPollution) => {
+        console.log('Détails reçus:', detailedPollution); // Debug
+        this.selectedPollution = detailedPollution;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des détails:', error);
+        this.loading = false;
+        // Afficher un message à l'utilisateur
+        alert('Impossible de charger les détails de la pollution. ' + error.message);
+      }
+    });
   }
 
   closeDetails() {

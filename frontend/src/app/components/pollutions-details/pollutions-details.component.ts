@@ -13,7 +13,17 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./pollutions-details.component.css']
 })
 export class PollutionsDetailsComponent implements OnInit, OnDestroy {
-  @Input() pollution!: Pollution; // donnée reçue depuis la liste
+  private _pollution!: Pollution;
+  
+  @Input() set pollution(value: Pollution) {
+    this._pollution = value;
+    if (this.form && value) {
+      this.updateForm(value);
+    }
+  }
+  get pollution(): Pollution {
+    return this._pollution;
+  }
   editMode = false;
   form!: FormGroup;
 
@@ -28,6 +38,10 @@ export class PollutionsDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.initForm();
+  }
+
+  private initForm() {
     this.form = this.fb.group({
       titre: [this.pollution.titre],
       type: [this.pollution.type],
@@ -38,6 +52,23 @@ export class PollutionsDetailsComponent implements OnInit, OnDestroy {
       longitude: [this.pollution.longitude],
       photo: [this.pollution.photo]
     });
+  }
+
+  private updateForm(pollution: Pollution) {
+    if (this.form) {
+      this.form.patchValue({
+        titre: pollution.titre,
+        type: pollution.type,
+        description: pollution.description,
+        date: pollution.date,
+        lieu: pollution.lieu,
+        latitude: pollution.latitude,
+        longitude: pollution.longitude,
+        photo: pollution.photo
+      });
+    } else {
+      this.initForm();
+    }
   }
 
   toggleEdit() {

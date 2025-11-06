@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { Pollution } from '../models/pollution';
 import { environment } from '../../environments/environment';
 
@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class PollutionService {
   private apiUrl = environment.backendPollution;
-  private isMock = !environment.production; // 👈 détermine si on est en local
+  private isMock = !environment.production;
 
   private localPollutions: Pollution[] = [];
   private pollutionsSubject = new BehaviorSubject<Pollution[]>([]);
@@ -18,70 +18,178 @@ export class PollutionService {
 
   constructor(private http: HttpClient) {}
 
+  private handleError(error: HttpErrorResponse, message: string): Observable<never> {
+    console.error('Une erreur s\'est produite:', error);
+    return throwError(() => new Error(message));
+  }
+
   /** 🔹 Récupère toutes les pollutions */
   getPollutions(): Observable<Pollution[]> {
-    // 👇 Si c’est la première fois, on charge depuis la source
     if (this.localPollutions.length === 0) {
-      return this.http.get<Pollution[]>(this.apiUrl).pipe(
-        tap(data => {
-          this.localPollutions = data;
-          this.pollutionsSubject.next(data);
+      return this.http.get<any[]>(this.apiUrl).pipe(
+        map(data => data.map(item => new Pollution(
+          item.titre,
+          item.type_pollution || item.type,
+          item.description,
+          new Date(item.date_observation || item.date),
+          item.lieu,
+          item.latitude,
+          item.longitude,
+          item.photo_url || item.photo,
+          item.id // 👈 Correction ici (id PostgreSQL)
+        ))),
+        tap(pollutions => {
+          this.localPollutions = pollutions;
+          this.pollutionsSubject.next(pollutions);
         })
       );
     }
-    // 👇 Sinon, on renvoie le flux actuel
     return this.pollutions$;
+  }
+
+  /** 🔍 Récupère une pollution par ID */
+  getPollutionById(id: string): Observable<Pollution> {
+    if (this.isMock) {
+      const pollution = this.localPollutions.find(p => p.id === id);
+      return pollution ? of(pollution) : throwError(() => new Error('Pollution non trouvée'));
+    } else {
+      return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+        map(item => {
+          if (!item) throw new Error('Pollution non trouvée');
+          return new Pollution(
+            item.titre,
+            item.type_pollution || item.type,
+            item.description,
+            new Date(item.date_observation || item.date),
+            item.lieu,
+            item.latitude,
+            item.longitude,
+            item.photo_url || item.photo,
+            item.id
+          );
+        }),
+        catchError(error => this.handleError(error, 'Impossible de récupérer la pollution.'))
+      );
+    }
   }
 
   /** ➕ Ajoute une pollution */
   addPollution(pollution: Pollution): Observable<Pollution> {
+    // ⚠️ On ne veut pas envoyer un énorme base64 à l’API
+    const isBase64 = typeof pollution.photo === 'string' && pollution.photo.startsWith('data:');
+
+    const pollutionData = {
+      titre: pollution.titre,
+      lieu: pollution.lieu,
+      date_observation: new Date(pollution.date).toISOString(),
+      type_pollution: pollution.type,
+      description: pollution.description,
+      latitude: pollution.latitude,
+      longitude: pollution.longitude,
+      // 👇 Si c’est du base64, on n’envoie rien pour éviter le 413
+      photo_url: isBase64 ? null : pollution.photo
+    };
+
     if (this.isMock) {
-      // ✅ mode local : on simule l’ajout
       this.localPollutions.push(pollution);
       this.pollutionsSubject.next([...this.localPollutions]);
       console.log('✅ Pollution ajoutée (mock) :', pollution);
       return of(pollution);
     } else {
-      // ✅ mode production : appel API
-      return this.http.post<Pollution>(this.apiUrl, pollution).pipe(
-        tap((newPollution) => {
+      return this.http.post<any>(this.apiUrl, pollutionData).pipe(
+        map(response => {
+          const newPollution = new Pollution(
+            response.titre,
+            response.type_pollution || response.type,
+            response.description,
+            new Date(response.date_observation || response.date),
+            response.lieu,
+            response.latitude,
+            response.longitude,
+            response.photo_url || response.photo,
+            response.id
+          );
           this.localPollutions.push(newPollution);
           this.pollutionsSubject.next([...this.localPollutions]);
-        })
+          return newPollution;
+        }),
+        catchError(error => this.handleError(error, 'Erreur lors de la création de la pollution.'))
       );
     }
   }
 
   /** ✏️ Met à jour une pollution */
-  updatePollution(updated: Pollution): Observable<Pollution> {
-    if (this.isMock) {
-      const index = this.localPollutions.findIndex(p => p.id === updated.id);
-      if (index !== -1) this.localPollutions[index] = updated;
-      this.pollutionsSubject.next([...this.localPollutions]);
-      return of(updated);
-    } else {
-      return this.http.put<Pollution>(`${this.apiUrl}/${updated.id}`, updated).pipe(
-        tap(updatedPollution => {
-          const index = this.localPollutions.findIndex(p => p.id === updatedPollution.id);
-          if (index !== -1) this.localPollutions[index] = updatedPollution;
-          this.pollutionsSubject.next([...this.localPollutions]);
-        })
-      );
-    }
+updatePollution(updated: Pollution): Observable<Pollution> {
+  if (this.isMock) {
+    const index = this.localPollutions.findIndex(p => p.id === updated.id);
+    if (index !== -1) this.localPollutions[index] = updated;
+    this.pollutionsSubject.next([...this.localPollutions]);
+    return of(updated);
+  } else {
+    const pollutionData = {
+      titre: updated.titre,
+      lieu: updated.lieu,
+      date_observation: new Date(updated.date).toISOString(),
+      type_pollution: updated.type,
+      description: updated.description,
+      latitude: updated.latitude,
+      longitude: updated.longitude,
+      photo_url:
+        typeof updated.photo === 'string' && updated.photo.startsWith('data:')
+          ? null
+          : updated.photo
+    };
+
+    return this.http.put<any>(`${this.apiUrl}/${updated.id}`, pollutionData).pipe(
+      map(response => {
+        // ✅ Vérifie si la pollution est dans response.data
+        const item = response.data || response;
+
+        const updatedPollution = new Pollution(
+          item.titre,
+          item.type_pollution || item.type,
+          item.description,
+          new Date(item.date_observation || item.date),
+          item.lieu,
+          item.latitude,
+          item.longitude,
+          item.photo_url || item.photo,
+          item.id
+        );
+
+        // ✅ Met à jour la liste locale immédiatement
+        const index = this.localPollutions.findIndex(p => p.id === updatedPollution.id);
+        if (index !== -1) {
+          this.localPollutions[index] = updatedPollution;
+        } else {
+          this.localPollutions.push(updatedPollution);
+        }
+
+        // ✅ Émet la nouvelle liste (UI instantanément à jour)
+        this.pollutionsSubject.next([...this.localPollutions]);
+        return updatedPollution;
+      }),
+      catchError(error =>
+        this.handleError(error, 'Erreur lors de la mise à jour de la pollution.')
+      )
+    );
   }
+}
+
 
   /** ❌ Supprime une pollution */
-  deletePollution(id: string): Observable<void> {
+  deletePollution(id: string): Observable<any> {
     if (this.isMock) {
       this.localPollutions = this.localPollutions.filter(p => p.id !== id);
       this.pollutionsSubject.next([...this.localPollutions]);
-      return of(void 0);
+      return of({ message: "La pollution a été supprimée avec succès." });
     } else {
-      return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
         tap(() => {
           this.localPollutions = this.localPollutions.filter(p => p.id !== id);
           this.pollutionsSubject.next([...this.localPollutions]);
-        })
+        }),
+        catchError(error => this.handleError(error, 'Impossible de supprimer la pollution.'))
       );
     }
   }

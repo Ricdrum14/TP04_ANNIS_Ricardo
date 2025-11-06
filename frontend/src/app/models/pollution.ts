@@ -9,7 +9,9 @@ export class Pollution{
         public latitude: string,
         public longitude: string,
         public photo: string,
+        id?: string
     ){
-        this.id = crypto.randomUUID().substring(0,8);
+        // Gestion de l'ID MongoDB
+        this.id = id || '';
     }
 }

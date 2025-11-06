@@ -35,7 +35,9 @@
           <img
             [src]="pollution.photo"
             [alt]="pollution.titre"
+            [title]="'Photo de la pollution : ' + pollution.titre"
             class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
+            onerror="this.src='assets/images/default-pollution.jpg'; this.onerror=null;"
           />
           <div
             class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
