@@ -1,0 +1,71 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-6">
+  
+  <!-- 🔙 Bouton retour -->
+  <button
+    routerLink="/"
+    class="flex items-center gap-2 mb-6 text-indigo-100 hover:text-white font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/30 backdrop-blur-md shadow transition-all duration-300"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Retour à l’accueil
+  </button>
+
+  <!-- 🧾 Contenu principal -->
+  <div
+    class="bg-white/95 backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-full max-w-md space-y-6 border border-white/20"
+  >
+    <!-- 🧭 Titre -->
+    <h2 class="text-2xl font-bold text-center text-indigo-700">Mon profil</h2>
+    <p class="text-center text-gray-500 text-sm">
+      Gérez vos informations personnelles et sécurisez votre compte 🔐
+    </p>
+
+    <!-- ✉️ Email -->
+    <label class="block">
+      <span class="text-gray-700 font-medium">Email</span>
+      <input
+        type="email"
+        [(ngModel)]="email"
+        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition"
+      />
+    </label>
+
+    <!-- 🔑 Mot de passe -->
+    <label class="block">
+      <span class="text-gray-700 font-medium">Nouveau mot de passe</span>
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        [(ngModel)]="mot_de_passe"
+        class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition"
+        placeholder="Laisser vide pour ne pas changer"
+      />
+      <label class="flex items-center text-sm mt-2 cursor-pointer text-gray-600">
+        <input type="checkbox" [(ngModel)]="showPassword" class="mr-2 rounded text-indigo-600" />
+        Afficher le mot de passe
+      </label>
+    </label>
+
+    <!-- ⚙️ Boutons -->
+    <div class="space-y-3 pt-2">
+      <button
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-semibold shadow-md transition"
+        (click)="onUpdate()"
+      >
+        Mettre à jour
+      </button>
+
+      <button
+        class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-lg font-semibold shadow-md transition"
+        (click)="onDelete()"
+      >
+        Supprimer mon compte
+      </button>
+    </div>
+
+    <!-- 📨 Message -->
+    <p *ngIf="message" class="text-center text-sm text-gray-600 mt-3">
+      {{ message }}
+    </p>
+  </div>
+</div>

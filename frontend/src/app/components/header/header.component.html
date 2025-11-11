@@ -1,66 +1,136 @@
-<header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-lg">
-  <div
-    class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-all duration-300"
-  >
-    <!-- 🌍 Logo + Burger -->
+<header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-lg relative z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 transition-all duration-300">
+    <!-- Logo + burger -->
     <div class="flex justify-between items-center w-full md:w-auto">
-      <h1 class="text-2xl font-bold text-white tracking-wide">
-        🌍 Pollution Tracker
+      <h1 class="text-2xl font-bold text-white tracking-wide flex items-center gap-2">
+        🌍 <span>Pollution Tracker</span>
       </h1>
-
-      <!-- Burger (mobile only) -->
       <button (click)="toggleMenu()" class="md:hidden text-white text-3xl focus:outline-none">
         {{ isMenuOpen ? '✖' : '☰' }}
       </button>
     </div>
 
-    <!-- 🔎 Barre de recherche -->
-    <div
-      class="relative w-full md:max-w-lg order-3 md:order-none mx-auto md:mx-0"
-    >
+    <!-- Recherche -->
+    <div class="relative w-full md:max-w-lg order-3 md:order-none mx-auto md:mx-0 flex-shrink-0">
       <input
         type="text"
         [(ngModel)]="searchQuery"
         (input)="onSearchChange()"
         placeholder="Rechercher une pollution..."
-        class="w-full pl-10 pr-4 py-2 rounded-full bg-white/95 text-gray-700 placeholder-gray-500 shadow-inner focus:ring-2 focus:ring-green-400 focus:border-white outline-none transition-all duration-200"
+        class="w-full pl-10 pr-4 py-2 rounded-full bg-white/95 text-gray-700 placeholder-gray-500 shadow-inner focus:ring-2 focus:ring-green-400 outline-none transition-all duration-200"
       />
-      <span
-        class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg"
-      >
-        🔍
-      </span>
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">🔍</span>
     </div>
 
-    <!-- 🧭 Navigation (desktop only) -->
-    <nav class="hidden md:flex space-x-6 items-center">
-      <a href="#" class="text-white hover:text-gray-200 font-medium transition">Accueil</a>
-      <a href="#" class="text-white hover:text-gray-200 font-medium transition">Déclarer</a>
-      <a href="#" class="text-white hover:text-gray-200 font-medium transition">Carte</a>
-      <a href="#" class="text-white hover:text-gray-200 font-medium transition">Statistiques</a>
-      <button
-        class="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition"
-      >
-        Se connecter
-      </button>
+    <!-- Nav desktop -->
+    <nav class="hidden md:flex items-center space-x-6">
+      <a class="text-white hover:text-gray-200 font-medium transition" routerLink="/">Accueil</a>
+      <a class="text-white hover:text-gray-200 font-medium transition" href="#">Déclarer</a>
+      <a class="text-white hover:text-gray-200 font-medium transition" href="#">Carte</a>
+      <a class="text-white hover:text-gray-200 font-medium transition" href="#">Statistiques</a>
+
+      
+      <!-- Si connecté -->
+<div *ngIf="user; else notLogged" class="relative ml-3" (click)="toggleMenu()" (keydown.escape)="isMenuOpen = false">
+  <!-- Bouton profil -->
+  <div
+    class="flex items-center gap-3 bg-white/15 px-5 py-2 rounded-full backdrop-blur-md shadow-sm border border-white/30 cursor-pointer select-none hover:bg-white/25 transition"
+  >
+    <img
+      [src]="'https://api.dicebear.com/8.x/initials/svg?seed=' + user.prenom"
+      alt="Avatar"
+      class="w-9 h-9 rounded-full border border-white shadow-sm flex-shrink-0"
+    />
+    <span class="text-white font-medium text-sm tracking-wide">
+      {{ user.prenom }} {{ user.nom }}
+    </span>
+    <svg
+      class="w-4 h-4 text-white transition-transform duration-200"
+      [ngClass]="{ 'rotate-180': isMenuOpen }"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+
+    <!-- Menu déroulant -->
+   <!-- Menu déroulant -->
+<div
+  *ngIf="isMenuOpen"
+  class="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 origin-top-right animate-fadeIn"
+>
+  <!-- Flèche -->
+  <div class="absolute -top-2 right-6 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-200"></div>
+
+  <!-- 🧍 Mon compte -->
+  <a
+    routerLink="/profil"
+    (click)="isMenuOpen = false"
+    class="menu-link account px-4 py-2 rounded-t-xl"
+  >
+    <img
+      src="assets/images/connecte.svg"
+      alt="Icône utilisateur connecté"
+      class="w-5 h-5"
+    />
+    <span>Mon compte</span>
+  </a>
+
+  <!-- 🚪 Déconnexion -->
+  <button
+    (click)="logout(); isMenuOpen = false"
+    class="menu-link logout w-full text-left px-4 py-2 rounded-b-xl"
+  >
+    <img
+      src="assets/images/deconnecte.svg"
+      alt="Icône déconnexion"
+      class="w-5 h-5"
+    />
+    <span>Déconnexion</span>
+  </button>
+</div>
+</div>
+
+
+
+      <!-- Si pas connecté -->
+      <ng-template #notLogged>
+        <button (click)="goLogin()" class="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition ml-2">
+          Se Connecter
+        </button>
+        <!-- Optionnel : accès direct à l’inscription -->
+        <!-- <button (click)="goSignup()" class="text-white/90 hover:text-white underline underline-offset-4">Créer un compte</button> -->
+      </ng-template>
     </nav>
   </div>
 
-  <!-- 📱 Menu mobile -->
-  <div
-    *ngIf="isMenuOpen"
-    class="md:hidden bg-indigo-700 bg-opacity-95 backdrop-blur-sm text-white border-t border-indigo-500 transition-all duration-300"
-  >
+  <!-- Menu mobile -->
+  <div *ngIf="isMenuOpen" class="md:hidden bg-indigo-700 bg-opacity-95 backdrop-blur-sm text-white border-t border-indigo-500 transition-all duration-300 absolute top-full left-0 w-full z-50">
     <nav class="flex flex-col items-center py-4 space-y-3">
-      <a href="#" class="hover:text-gray-200 text-lg font-medium transition">Accueil</a>
-      <a href="#" class="hover:text-gray-200 text-lg font-medium transition">Déclarer</a>
-      <a href="#" class="hover:text-gray-200 text-lg font-medium transition">Carte</a>
-      <a href="#" class="hover:text-gray-200 text-lg font-medium transition">Statistiques</a>
-      <button
-        class="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
-      >
-        Se connecter
-      </button>
+      <a class="hover:text-gray-200 text-lg font-medium transition" routerLink="/">Accueil</a>
+      <a class="hover:text-gray-200 text-lg font-medium transition" href="#">Déclarer</a>
+      <a class="hover:text-gray-200 text-lg font-medium transition" href="#">Carte</a>
+      <a class="hover:text-gray-200 text-lg font-medium transition" href="#">Statistiques</a>
+
+      <div *ngIf="user; else mobileLogin" class="flex flex-col items-center gap-3 mt-2">
+        <img [src]="'https://api.dicebear.com/8.x/initials/svg?seed=' + user.prenom" alt="Avatar" class="w-12 h-12 rounded-full border border-white shadow-md" />
+        <p class="text-sm text-gray-100 font-medium">{{ user.prenom }} {{ user.nom }}</p>
+        <button (click)="logout()" class="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition">
+          Déconnexion
+        </button>
+      </div>
+
+      <ng-template #mobileLogin>
+        <button (click)="goLogin()" class="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition">
+          Se Connecter
+        </button>
+        <button (click)="goSignup()" class="text-white/90 hover:text-white underline underline-offset-4">
+          Créer un compte
+        </button>
+      </ng-template>
     </nav>
   </div>
 </header>

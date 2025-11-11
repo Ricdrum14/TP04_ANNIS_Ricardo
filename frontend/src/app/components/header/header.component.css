@@ -1,0 +1,55 @@
+/* ✨ Animation d’apparition du menu (déjà présente chez toi) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* 🧍 Liens du menu profil */
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* 🟣 Mon compte */
+.menu-link.account {
+  color: #4F46E5; /* Indigo */
+}
+
+.menu-link.account:hover {
+  background-color: #EEF2FF; /* Indigo clair */
+  color: #4338CA; /* Indigo plus foncé */
+  transform: scale(1.03);
+}
+
+/* 🔴 Déconnexion */
+.menu-link.logout {
+  color: #DC2626; /* Rouge danger */
+}
+
+.menu-link.logout:hover {
+  background-color: #FEF2F2; /* Rouge clair */
+  color: #B91C1C; /* Rouge foncé */
+  transform: scale(1.03);
+}
+
+/* 🎨 Animation fluide sur les icônes */
+.menu-link img {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.menu-link:hover img {
+  transform: scale(1.15);
+  opacity: 0.9;
+}

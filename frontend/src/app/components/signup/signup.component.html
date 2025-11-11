@@ -1,0 +1,152 @@
+<div
+  class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-700 p-6"
+>
+  <!-- 🔙 Bouton retour -->
+  <button
+    routerLink="/"
+    class="flex items-center gap-2 mb-6 text-indigo-100 hover:text-white font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/30 backdrop-blur-md shadow transition-all duration-300"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke="currentColor"
+      class="w-5 h-5"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Retour à l’accueil
+  </button>
+
+  <!-- 🧾 Carte d’inscription -->
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-6">
+    <h2 id="signup-title" class="text-2xl font-bold text-center text-indigo-700">
+      Inscription
+    </h2>
+    <p class="text-center text-gray-500 text-sm">
+      Créez un compte pour rejoindre la communauté 🌍
+    </p>
+
+    <form
+      aria-labelledby="signup-title"
+      (ngSubmit)="onSignup()"
+      #signupForm="ngForm"
+      class="space-y-4"
+    >
+      <!-- Prénom -->
+      <div>
+        <label for="prenom" class="block text-gray-700 font-medium mb-1">Prénom</label>
+        <input
+          id="prenom"
+          name="prenom"
+          type="text"
+          [(ngModel)]="prenom"
+          [ngModelOptions]="{ standalone: true }"
+          required
+          minlength="2"
+          placeholder="Entrez votre prénom"
+          class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <p *ngIf="formSubmitted && signupForm.controls['prenom']?.invalid" class="text-red-500 text-sm">
+          Le prénom doit contenir au moins 2 caractères
+        </p>
+      </div>
+
+      <!-- Nom -->
+      <div>
+        <label for="nom" class="block text-gray-700 font-medium mb-1">Nom</label>
+        <input
+          id="nom"
+          name="nom"
+          type="text"
+          [(ngModel)]="nom"
+          [ngModelOptions]="{ standalone: true }"
+          required
+          minlength="2"
+          placeholder="Entrez votre nom"
+          class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <p *ngIf="formSubmitted && signupForm.controls['nom']?.invalid" class="text-red-500 text-sm">
+          Le nom doit contenir au moins 2 caractères
+        </p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          [(ngModel)]="email"
+          [ngModelOptions]="{ standalone: true }"
+          required
+          email
+          placeholder="Entrez votre adresse email"
+          class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <p *ngIf="formSubmitted && signupForm.controls['email']?.invalid" class="text-red-500 text-sm">
+          Entrez une adresse email valide
+        </p>
+      </div>
+
+      <!-- Mot de passe -->
+      <div>
+        <label for="password" class="block text-gray-700 font-medium mb-1">Mot de passe</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          [(ngModel)]="password"
+          [ngModelOptions]="{ standalone: true }"
+          required
+          minlength="6"
+          placeholder="Choisissez un mot de passe"
+          class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <p *ngIf="formSubmitted && signupForm.controls['password']?.invalid" class="text-red-500 text-sm">
+          Le mot de passe doit contenir au moins 6 caractères
+        </p>
+      </div>
+
+      <!-- Confirmer mot de passe -->
+      <div>
+        <label for="confirmPassword" class="block text-gray-700 font-medium mb-1">Confirmer le mot de passe</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          [(ngModel)]="confirmPassword"
+          [ngModelOptions]="{ standalone: true }"
+          required
+          placeholder="Répétez votre mot de passe"
+          class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <p *ngIf="formSubmitted && !passwordsMatch()" class="text-red-500 text-sm">
+          Les mots de passe ne correspondent pas
+        </p>
+      </div>
+
+      <!-- Bouton d'inscription -->
+      <button
+        type="submit"
+        [disabled]="signupForm.invalid || isLoading"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition"
+      >
+        {{ isLoading ? "Création du compte..." : "S'inscrire" }}
+      </button>
+    </form>
+
+    <!-- Lien connexion -->
+    <p class="text-center text-sm text-gray-600 mt-4">
+      Déjà inscrit ?
+      <a
+        routerLink="/login"
+        class="text-indigo-600 font-semibold hover:underline"
+      >
+        Connectez-vous !
+      </a>
+    </p>
+  </div>
+</div>
