@@ -1,14 +1,14 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { Utilisateur } from '../../models/utilisateur';
 import { UtilisateurService } from '../../services/utilisateur.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -17,6 +17,9 @@ export class HeaderComponent implements OnInit {
   searchQuery = '';
   user: Utilisateur | null = null;
 
+  @Input() declareActive = false; 
+  @Output() goHome = new EventEmitter<void>();
+  @Output() openDeclareForm = new EventEmitter<void>();
   @Output() searchChanged = new EventEmitter<string>();
 
   constructor(
@@ -51,5 +54,17 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.utilisateurService.logout();
+  }
+
+  // 🔹 Appelé quand on clique sur "Accueil"
+  navigateHome() {
+    this.isMenuOpen = false;
+    this.goHome.emit();
+  }
+
+  // 🔹 Appelé quand on clique sur "Déclarer"
+  declarePollution() {
+    this.isMenuOpen = false;
+    this.openDeclareForm.emit();
   }
 }
